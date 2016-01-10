@@ -48,13 +48,16 @@ We start summarizing the steps per day with the following code:
 stepsbyday <- aggregate(activity$steps, list(by=activity$date), FUN=sum, na.rm=F)
 names(stepsbyday) <- c("date", "steps")
 summary(stepsbyday)
-hist(stepsbyday$steps, col="grey", main="Histogram of Steps", xlab="Steps/day")
 ```
 
-```{r echo=FALSE, results="hide"}
+```{r echo=FALSE, results="hide", fig.show="hide"}
+par(mfrow=c(1,1))
+hist(stepsbyday$steps, col="grey", main="Histogram of Steps", xlab="Steps/day")
 dev.copy(png, "figure/HistogramOfSteps.png")
 dev.off()
 ```
+
+![Histogram of Steps](figure/HistogramOfSteps.png)
 
 Total steps by day has is has a normal distribution with a **Mean of `r mean(stepsbyday$steps, na.rm=T)` and a Median of `r median(stepsbyday$steps, na.rm=T)` steps/day**.
 
@@ -67,17 +70,19 @@ To analyze the daily activity pattern we aggregate the steps by interval, and co
 stepsbyinterval <- aggregate(activity$steps, list(by=activity$interval), FUN=mean, na.rm=T)
 names(stepsbyinterval) <- c("interval", "steps")
 summary(stepsbyinterval)
+```
+
+```{r echo=FALSE, results="hide", fig.show="hide"}
 plot(stepsbyinterval$interval, stepsbyinterval$steps, type="l", main="Steps by Interval", xlab="Interval", ylab="Steps", col="blue")
 meansteps <- mean(stepsbyinterval$steps)
 maxinterval <- stepsbyinterval[stepsbyinterval$steps==max(stepsbyinterval$steps),]
 abline(stepsbyinterval, h=meansteps, col="red")
 abline(stepsbyinterval, v=maxinterval$interval, col="grey")
-```
-
-```{r echo=FALSE, results="hide"}
 dev.copy(png, "figure/StepsByInterval.png")
 dev.off()
 ```
+
+![Steps by Interval](figure/StepsByInterval.png)
 
 The average steps in a 5 minute interval is `r meansteps`.
 
@@ -88,7 +93,7 @@ The maximum average number of steps in a 5 minute interval is `r maxinterval$ste
 ## Imputing missing values
 In the **activity** data frame there are `r sum(is.na(activity$steps))` missing values.
 
-We will create a new **mactivity** from **activity** data.frame in order to impute missing values. We will use the average steps per inteval.
+We will create a new **mactivity** from **activity** data.frame in order to impute missing values. We will use the average steps per interval.
 
 ```{r echo=TRUE}
 mactivity <- activity 
@@ -106,13 +111,15 @@ The following code summarizes the steps per day and create a new histogram with 
 mstepsbyday <- aggregate(mactivity$steps, list(by=mactivity$date), FUN=sum, na.rm=F)
 names(mstepsbyday) <- c("date", "steps")
 summary(mstepsbyday)
-hist(mstepsbyday$steps, col="grey", main="Histogram of Steps (imputed data)", xlab="Steps/day")
 ```
 
-```{r echo=FALSE, results="hide"}
+```{r echo=FALSE, results="hide", fig.show="hide"}
+hist(mstepsbyday$steps, col="grey", main="Histogram of Steps (imputed data)", xlab="Steps/day")
 dev.copy(png, "figure/mHistogramOfSteps.png")
 dev.off()
 ```
+
+![Histogram of Steps (imputed data)](figure/mHistogramOfSteps.png)
 
 The **Mean is `r mean(mstepsbyday$steps, na.rm=T)` steps and the Median is `r median(mstepsbyday$steps, na.rm=T)` steps/day**.
 
@@ -136,7 +143,7 @@ names(mstepsbyinterval) <- c("interval", "wd", "steps")
 
 Now we can do the plot to compare activity between weekdays and weekend.
 
-```{r echo=TRUE}
+```{r echo=FALSE, results="hide", fig.show="hide"}
 par(mfrow=c(1,2))
 
 with(subset(mstepsbyinterval, wd=="weekday"), plot(interval, steps, main="Weekday", type="l", col="blue", ylim = c(0,230)))
@@ -146,11 +153,12 @@ with(subset(mstepsbyinterval, wd=="weekend"), plot(interval, steps, main="Weeken
 abline(mstepsbyinterval, h=mean(subset(mstepsbyinterval, wd="weekend")$steps), col="red")
 ```
 
-```{r echo=FALSE, results="hide"}
+```{r echo=FALSE, results="hide", fig.show="hide",include=FALSE}
 dev.copy(png, "figure/weekdayvsweekend.png")
 dev.off()
 ```
 
+![Steps on Weekdays vs Weekend](figure/weekdayvsweekend.png)
 
 The mean steps per interval (`r mean(subset(mstepsbyinterval, wd="weekday")$steps)`) seems to be the same all days. What varies is the distribution along the days. On weekdays the activity has a peak between 5am and 10am. Activity seems to start earlier than on weekends (5am). On weekends activity is evenly distributed along the day.
 

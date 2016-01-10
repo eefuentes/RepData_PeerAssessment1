@@ -81,13 +81,9 @@ summary(stepsbyday)
 ##                       NA's   :8
 ```
 
-```r
-hist(stepsbyday$steps, col="grey", main="Histogram of Steps", xlab="Steps/day")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)\
 
 
+![Histogram of Steps](figure/HistogramOfSteps.png)
 
 Total steps by day has is has a normal distribution with a **Mean of 1.0766189\times 10^{4} and a Median of 10765 steps/day**.
 
@@ -113,17 +109,9 @@ summary(stepsbyinterval)
 ##  Max.   :2355.0   Max.   :206.170
 ```
 
-```r
-plot(stepsbyinterval$interval, stepsbyinterval$steps, type="l", main="Steps by Interval", xlab="Interval", ylab="Steps", col="blue")
-meansteps <- mean(stepsbyinterval$steps)
-maxinterval <- stepsbyinterval[stepsbyinterval$steps==max(stepsbyinterval$steps),]
-abline(stepsbyinterval, h=meansteps, col="red")
-abline(stepsbyinterval, v=maxinterval$interval, col="grey")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)\
 
 
+![Steps by Interval](figure/StepsByInterval.png)
 
 The average steps in a 5 minute interval is 37.3825996.
 
@@ -134,7 +122,7 @@ The maximum average number of steps in a 5 minute interval is 206.1698113, and i
 ## Imputing missing values
 In the **activity** data frame there are 2304 missing values.
 
-We will create a new **mactivity** from **activity** data.frame in order to impute missing values. We will use the average steps per inteval.
+We will create a new **mactivity** from **activity** data.frame in order to impute missing values. We will use the average steps per interval.
 
 
 ```r
@@ -166,13 +154,9 @@ summary(mstepsbyday)
 ##  Max.   :2012-11-30   Max.   :21194
 ```
 
-```r
-hist(mstepsbyday$steps, col="grey", main="Histogram of Steps (imputed data)", xlab="Steps/day")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)\
 
 
+![Histogram of Steps (imputed data)](figure/mHistogramOfSteps.png)
 
 The **Mean is 1.0766189\times 10^{4} steps and the Median is 1.0766189\times 10^{4} steps/day**.
 
@@ -199,21 +183,12 @@ names(mstepsbyinterval) <- c("interval", "wd", "steps")
 Now we can do the plot to compare activity between weekdays and weekend.
 
 
-```r
-par(mfrow=c(1,2))
-
-with(subset(mstepsbyinterval, wd=="weekday"), plot(interval, steps, main="Weekday", type="l", col="blue", ylim = c(0,230)))
-abline(mstepsbyinterval, h=mean(subset(mstepsbyinterval, wd="weekday")$steps), col="red")
-
-with(subset(mstepsbyinterval, wd=="weekend"), plot(interval, steps, main="Weekend", type="l", col="blue", ylim = c(0,230)))
-abline(mstepsbyinterval, h=mean(subset(mstepsbyinterval, wd="weekend")$steps), col="red")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)\
 
 
 
+![Steps on Weekdays vs Weekend](figure/weekdayvsweekend.png)
 
 The mean steps per interval (38.9884913) seems to be the same all days. What varies is the distribution along the days. On weekdays the activity has a peak between 5am and 10am. Activity seems to start earlier than on weekends (5am). On weekends activity is evenly distributed along the day.
 
 ***
+
