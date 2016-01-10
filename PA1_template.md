@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Erick E. Fuentes"
-output: 
-  html_document: 
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Erick E. Fuentes  
 
 
 ***
@@ -17,7 +12,8 @@ It intends to analyze the daily activity patterns in order to identify differenc
 
 First we load the zipped csv data into the **activity** data frame.
 
-``` {r echo = TRUE}
+
+```r
 activity <- read.csv(unzip("activity.zip"))
 ```
 
@@ -29,13 +25,36 @@ We have tree variables
 
 and 2304 NAs in steps measurements.
 
-```{r echo = TRUE}
+
+```r
 str(activity)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
+```r
 summary(activity)
 ```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
+```
+
 Since date is a Factor, we need to convert it to Date.
-```{r echo = TRUE}
+
+```r
 activity$date <- as.Date(activity$date)
 ```
 
@@ -44,29 +63,57 @@ activity$date <- as.Date(activity$date)
 ## What is mean total number of steps taken per day?
 We start summarizing the steps per day with the following code:
 
-```{r echo=TRUE}
+
+```r
 stepsbyday <- aggregate(activity$steps, list(by=activity$date), FUN=sum, na.rm=F)
 names(stepsbyday) <- c("date", "steps")
 summary(stepsbyday)
+```
+
+```
+##       date                steps      
+##  Min.   :2012-10-01   Min.   :   41  
+##  1st Qu.:2012-10-16   1st Qu.: 8841  
+##  Median :2012-10-31   Median :10765  
+##  Mean   :2012-10-31   Mean   :10766  
+##  3rd Qu.:2012-11-15   3rd Qu.:13294  
+##  Max.   :2012-11-30   Max.   :21194  
+##                       NA's   :8
+```
+
+```r
 hist(stepsbyday$steps, col="grey", main="Histogram of Steps", xlab="Steps/day")
 ```
 
-```{r echo=FALSE, results="hide"}
-dev.copy(png, "figure/HistogramOfSteps.png")
-dev.off()
-```
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)\
 
-Total steps by day has is has a normal distribution with a **Mean of `r mean(stepsbyday$steps, na.rm=T)` and a Median of `r median(stepsbyday$steps, na.rm=T)` steps/day**.
+
+
+Total steps by day has is has a normal distribution with a **Mean of 1.0766189\times 10^{4} and a Median of 10765 steps/day**.
 
 
 ***
 ## What is the average daily activity pattern?
 To analyze the daily activity pattern we aggregate the steps by interval, and compute the mean as follows:
 
-```{r echo=TRUE}
+
+```r
 stepsbyinterval <- aggregate(activity$steps, list(by=activity$interval), FUN=mean, na.rm=T)
 names(stepsbyinterval) <- c("interval", "steps")
 summary(stepsbyinterval)
+```
+
+```
+##     interval          steps        
+##  Min.   :   0.0   Min.   :  0.000  
+##  1st Qu.: 588.8   1st Qu.:  2.486  
+##  Median :1177.5   Median : 34.113  
+##  Mean   :1177.5   Mean   : 37.383  
+##  3rd Qu.:1766.2   3rd Qu.: 52.835  
+##  Max.   :2355.0   Max.   :206.170
+```
+
+```r
 plot(stepsbyinterval$interval, stepsbyinterval$steps, type="l", main="Steps by Interval", xlab="Interval", ylab="Steps", col="blue")
 meansteps <- mean(stepsbyinterval$steps)
 maxinterval <- stepsbyinterval[stepsbyinterval$steps==max(stepsbyinterval$steps),]
@@ -74,23 +121,23 @@ abline(stepsbyinterval, h=meansteps, col="red")
 abline(stepsbyinterval, v=maxinterval$interval, col="grey")
 ```
 
-```{r echo=FALSE, results="hide"}
-dev.copy(png, "figure/StepsByInterval.png")
-dev.off()
-```
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)\
 
-The average steps in a 5 minute interval is `r meansteps`.
 
-The maximum average number of steps in a 5 minute interval is `r maxinterval$steps`, and it's done on the interval `r maxinterval$interval`.
+
+The average steps in a 5 minute interval is 37.3825996.
+
+The maximum average number of steps in a 5 minute interval is 206.1698113, and it's done on the interval 835.
 
 
 ***
 ## Imputing missing values
-In the **activity** data frame there are `r sum(is.na(activity$steps))` missing values.
+In the **activity** data frame there are 2304 missing values.
 
 We will create a new **mactivity** from **activity** data.frame in order to impute missing values. We will use the average steps per inteval.
 
-```{r echo=TRUE}
+
+```r
 mactivity <- activity 
 for (i in 1:nrow(mactivity)) {
     if (is.na(mactivity[i,"steps"])) {
@@ -102,19 +149,32 @@ for (i in 1:nrow(mactivity)) {
 
 
 The following code summarizes the steps per day and create a new histogram with the new imputed data.
-```{r echo=TRUE}
+
+```r
 mstepsbyday <- aggregate(mactivity$steps, list(by=mactivity$date), FUN=sum, na.rm=F)
 names(mstepsbyday) <- c("date", "steps")
 summary(mstepsbyday)
+```
+
+```
+##       date                steps      
+##  Min.   :2012-10-01   Min.   :   41  
+##  1st Qu.:2012-10-16   1st Qu.: 9819  
+##  Median :2012-10-31   Median :10766  
+##  Mean   :2012-10-31   Mean   :10766  
+##  3rd Qu.:2012-11-15   3rd Qu.:12811  
+##  Max.   :2012-11-30   Max.   :21194
+```
+
+```r
 hist(mstepsbyday$steps, col="grey", main="Histogram of Steps (imputed data)", xlab="Steps/day")
 ```
 
-```{r echo=FALSE, results="hide"}
-dev.copy(png, "figure/mHistogramOfSteps.png")
-dev.off()
-```
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)\
 
-The **Mean is `r mean(mstepsbyday$steps, na.rm=T)` steps and the Median is `r median(mstepsbyday$steps, na.rm=T)` steps/day**.
+
+
+The **Mean is 1.0766189\times 10^{4} steps and the Median is 1.0766189\times 10^{4} steps/day**.
 
 The median and mean do not vary from the numbers estimated before imputing the missing values. So there is no major impact on imputing missing values.
 
@@ -123,20 +183,23 @@ The median and mean do not vary from the numbers estimated before imputing the m
 ## Are there differences in activity patterns between weekdays and weekends?
 To compare steps in weekends with weekdays a factor variable **wd** is needed in the **mactivity** data frame.
 
-```{r echo=TRUE}
+
+```r
 mactivity$wd <- ifelse(format(mactivity$date, "%w") %in% c("1":"5"),"weekday", "weekend")
 ```
 
 Next we need to group by **interval** and **wd** and calculate the mean.  The result is in **mstepsbyinterval**
 
-```{r echo=TRUE}
+
+```r
 mstepsbyinterval <- aggregate(mactivity$steps, list(a=mactivity$interval,b=mactivity$wd), FUN=mean, na.rm=T)
 names(mstepsbyinterval) <- c("interval", "wd", "steps")
 ```
 
 Now we can do the plot to compare activity between weekdays and weekend.
 
-```{r echo=TRUE}
+
+```r
 par(mfrow=c(1,2))
 
 with(subset(mstepsbyinterval, wd=="weekday"), plot(interval, steps, main="Weekday", type="l", col="blue", ylim = c(0,230)))
@@ -146,12 +209,11 @@ with(subset(mstepsbyinterval, wd=="weekend"), plot(interval, steps, main="Weeken
 abline(mstepsbyinterval, h=mean(subset(mstepsbyinterval, wd="weekend")$steps), col="red")
 ```
 
-```{r echo=FALSE, results="hide"}
-dev.copy(png, "figure/weekdayvsweekend.png")
-dev.off()
-```
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)\
 
 
-The mean steps per interval (`r mean(subset(mstepsbyinterval, wd="weekday")$steps)`) seems to be the same all days. What varies is the distribution along the days. On weekdays the activity has a peak between 5am and 10am. Activity seems to start earlier than on weekends (5am). On weekends activity is evenly distributed along the day.
+
+
+The mean steps per interval (38.9884913) seems to be the same all days. What varies is the distribution along the days. On weekdays the activity has a peak between 5am and 10am. Activity seems to start earlier than on weekends (5am). On weekends activity is evenly distributed along the day.
 
 ***
